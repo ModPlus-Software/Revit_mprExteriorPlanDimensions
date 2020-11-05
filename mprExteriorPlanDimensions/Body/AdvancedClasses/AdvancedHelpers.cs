@@ -4,6 +4,7 @@
     using System.Linq;
     using Autodesk.Revit.DB;
     using Enumerators;
+    using ModPlus_Revit.Utils;
     using ModPlusAPI;
 
     public static class AdvancedHelpers
@@ -504,17 +505,7 @@
         {
             return walls.Select(w => w.Wall.Width).Max();
         }
-
-        public static double MmToFt(this double mm)
-        {
-            return UnitUtils.ConvertToInternalUnits(mm, DisplayUnitType.DUT_MILLIMETERS);
-        }
-
-        public static double MmToFt(this int mm)
-        {
-            return UnitUtils.ConvertToInternalUnits(mm, DisplayUnitType.DUT_MILLIMETERS);
-        }
-
+        
         private static List<XYZ> GetPointsFromGeometry(this AdvancedWall advancedWall, View view)
         {
             var points = new List<XYZ>();

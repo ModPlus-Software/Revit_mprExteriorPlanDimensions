@@ -22,10 +22,12 @@
         {
             try
             {
+#if !DEBUG
                 Statistic.SendCommandStarting(new ModPlusConnector());
+#endif
 
                 var doc = commandData.Application.ActiveUIDocument.Document;
-                
+
                 // Проверяем, что находимся на нужном виде
                 var view = doc.ActiveView;
                 var isViewPlan = view is ViewPlan;
@@ -70,14 +72,14 @@
             try
             {
                 var defConfig = Guid.TryParse(
-                    UserConfigFile.GetValue("mprExteriorPlanDimensions",  "DefaultExteriorConfiguration"), out var g)
+                    UserConfigFile.GetValue("mprExteriorPlanDimensions", "DefaultExteriorConfiguration"), out var g)
                     ? g
                     : Guid.Empty;
                 if (defConfig == Guid.Empty)
                     return null;
 
                 var exteriorConfigurations = SettingsFile.LoadExteriorConfigurations();
-                
+
                 foreach (var configuration in exteriorConfigurations)
                 {
                     if (configuration.Id.Equals(defConfig))
