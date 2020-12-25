@@ -86,21 +86,43 @@
                 return;
             }
 
-            AdvancedHelpers.FindExtremes(_advancedWalls, doc, out var leftExtreme, out var rightExtreme, out var topextreme, out var bottomExtreme);
+            AdvancedHelpers.FindExtremes(
+                _advancedWalls, out var leftExtreme, out var rightExtreme, out var topextreme, out var bottomExtreme);
 
             using (var transactionGroup = new TransactionGroup(doc, _transactionName))
             {
                 transactionGroup.Start();
 
-                // create dimensions
+                var createdDimensions = new List<Dimension>();
+
                 if (_exteriorConfiguration.RightDimensions)
-                    CreateSideDimensions(rightExtreme, _advancedWalls, ExtremeWallVariant.Right);
+                    createdDimensions.AddRange(CreateSideDimensions(rightExtreme, _advancedWalls, ExtremeWallVariant.Right));
                 if (_exteriorConfiguration.LeftDimensions)
-                    CreateSideDimensions(leftExtreme, _advancedWalls, ExtremeWallVariant.Left);
+                    createdDimensions.AddRange(CreateSideDimensions(leftExtreme, _advancedWalls, ExtremeWallVariant.Left));
                 if (_exteriorConfiguration.TopDimensions)
-                    CreateSideDimensions(topextreme, _advancedWalls, ExtremeWallVariant.Top);
+                    createdDimensions.AddRange(CreateSideDimensions(topextreme, _advancedWalls, ExtremeWallVariant.Top));
                 if (_exteriorConfiguration.BottomDimensions)
-                    CreateSideDimensions(bottomExtreme, _advancedWalls, ExtremeWallVariant.Bottom);
+                    createdDimensions.AddRange(CreateSideDimensions(bottomExtreme, _advancedWalls, ExtremeWallVariant.Bottom));
+
+                if (createdDimensions.Any(d => d != null))
+                {
+                    using (var tr = new Transaction(doc, "Remove zeroes"))
+                    {
+                        tr.Start();
+                        
+                        foreach (var createdDimension in createdDimensions.Where(d => d != null))
+                        {
+                            if (Dimensions.TryRemoveZeroes(createdDimension, out var referenceArray) &&
+                                createdDimension.Curve is Line line)
+                            {
+                                doc.Delete(createdDimension.Id);
+                                doc.Create.NewDimension(doc.ActiveView, line, referenceArray);
+                            }
+                        }
+
+                        tr.Commit();
+                    }
+                }
 
                 transactionGroup.Assimilate();
             }
@@ -127,10 +149,9 @@
             }
         }
 
-        private List<Dimension> CreateSideDimensions(
+        private IEnumerable<Dimension> CreateSideDimensions(
             List<AdvancedWall> sideAdvancedWalls, List<AdvancedWall> allWalls, ExtremeWallVariant extremeWallVariant)
         {
-            var createdDimensions = new List<Dimension>();
             var doc = _uiApplication.ActiveUIDocument.Document;
 
             // Сумма длин отступов от крайней стены
@@ -156,11 +177,11 @@
                 // Крайние оси
                 if (chain.ExtremeGrids)
                 {
-                    createdDimensions.Add(CreateDimensionByExtremeGrids(doc, chainDimensionLine, extremeWallVariant));
+                    yield return CreateDimensionByExtremeGrids(doc, chainDimensionLine, extremeWallVariant);
                 }
                 else if (chain.Overall)
                 {
-                    createdDimensions.Add(CreateDimensionByOverallWalls(doc, chainDimensionLine, sideAdvancedWalls, extremeWallVariant));
+                    yield return CreateDimensionByOverallWalls(doc, chainDimensionLine, sideAdvancedWalls, extremeWallVariant);
                 }
 
                 // Так как вариант "крайние оси" или "габарит" перекрывает все остальные
@@ -183,14 +204,12 @@
                             transaction.Start();
                             var dimension = doc.Create.NewDimension(doc.ActiveView, chainDimensionLine, referenceArray);
                             if (dimension != null)
-                                createdDimensions.Add(dimension);
+                                yield return dimension;
                             transaction.Commit();
                         }
                     }
                 }
             }
-
-            return createdDimensions;
         }
 
         /// <summary>Создание размеров для крайних осей</summary>
@@ -215,7 +234,7 @@
             {
                 // Беру горизонтальные оси
                 var verticalGrids = _advancedGrids.Where(g => g.Orientation == ElementOrientation.Horizontal).ToList();
-                
+
                 // Сортирую по Y
                 verticalGrids.Sort((g1, g2) => g1.StartPoint.Y.CompareTo(g2.StartPoint.Y));
                 var grids = new List<AdvancedGrid> { verticalGrids.First(), verticalGrids.Last() };

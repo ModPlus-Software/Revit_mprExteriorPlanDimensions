@@ -49,7 +49,6 @@
         
         public static void FindExtremes(
             List<AdvancedWall> walls,
-            Document doc,
             out List<AdvancedWall> leftExtreme,
             out List<AdvancedWall> rightExtreme,
             out List<AdvancedWall> topExtreme,
