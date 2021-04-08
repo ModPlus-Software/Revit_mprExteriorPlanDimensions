@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mprExteriorPlanDimensions", "mprExteriorPlanDimensions\mprExteriorPlanDimensions.csproj", "{758A3F8A-E418-4121-8EF5-1EF922DD96D7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "mprExteriorPlanDimensions", "mprExteriorPlanDimensions\mprExteriorPlanDimensions.csproj", "{758A3F8A-E418-4121-8EF5-1EF922DD96D7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "_build", "build\_build.csproj", "{BA31FA1A-93D6-488A-8448-2685049F2CC6}"
 EndProject
@@ -20,6 +20,7 @@ Global
 		R2019|x64 = R2019|x64
 		R2020|x64 = R2020|x64
 		R2021|x64 = R2021|x64
+		R2022|x64 = R2022|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{758A3F8A-E418-4121-8EF5-1EF922DD96D7}.Debug|x64.ActiveCfg = Debug|x64
@@ -34,6 +35,8 @@ Global
 		{758A3F8A-E418-4121-8EF5-1EF922DD96D7}.R2020|x64.Build.0 = R2020|x64
 		{758A3F8A-E418-4121-8EF5-1EF922DD96D7}.R2021|x64.ActiveCfg = R2021|x64
 		{758A3F8A-E418-4121-8EF5-1EF922DD96D7}.R2021|x64.Build.0 = R2021|x64
+		{758A3F8A-E418-4121-8EF5-1EF922DD96D7}.R2022|x64.ActiveCfg = Debug|x64
+		{758A3F8A-E418-4121-8EF5-1EF922DD96D7}.R2022|x64.Build.0 = Debug|x64
 		{BA31FA1A-93D6-488A-8448-2685049F2CC6}.Debug|x64.ActiveCfg = Debug|Any CPU
 		{BA31FA1A-93D6-488A-8448-2685049F2CC6}.Debug|x64.Build.0 = Debug|Any CPU
 		{BA31FA1A-93D6-488A-8448-2685049F2CC6}.R2017|x64.ActiveCfg = Release|Any CPU
@@ -46,6 +49,8 @@ Global
 		{BA31FA1A-93D6-488A-8448-2685049F2CC6}.R2020|x64.Build.0 = Release|Any CPU
 		{BA31FA1A-93D6-488A-8448-2685049F2CC6}.R2021|x64.ActiveCfg = Release|Any CPU
 		{BA31FA1A-93D6-488A-8448-2685049F2CC6}.R2021|x64.Build.0 = Release|Any CPU
+		{BA31FA1A-93D6-488A-8448-2685049F2CC6}.R2022|x64.ActiveCfg = Release|Any CPU
+		{BA31FA1A-93D6-488A-8448-2685049F2CC6}.R2022|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
