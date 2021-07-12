@@ -109,7 +109,7 @@
                     using (var tr = new Transaction(doc, "Remove zeroes"))
                     {
                         tr.Start();
-                        
+
                         foreach (var createdDimension in createdDimensions.Where(d => d != null))
                         {
                             if (Dimensions.TryRemoveZeroes(createdDimension, out var referenceArray) &&
@@ -222,12 +222,6 @@
                 return null;
             Dimension returnedDimension = null;
             var referenceArray = new ReferenceArray();
-            var opt = new Options
-            {
-                ComputeReferences = true,
-                IncludeNonVisibleObjects = true,
-                View = _uiApplication.ActiveUIDocument.Document.ActiveView
-            };
 
             // Нужно получить референсы крайних осей в зависимости от направления
             if (extremeWallVariant == ExtremeWallVariant.Left || extremeWallVariant == ExtremeWallVariant.Right)
@@ -235,36 +229,33 @@
                 // Беру горизонтальные оси
                 var verticalGrids = _advancedGrids.Where(g => g.Orientation == ElementOrientation.Horizontal).ToList();
 
-                // Сортирую по Y
-                verticalGrids.Sort((g1, g2) => g1.StartPoint.Y.CompareTo(g2.StartPoint.Y));
-                var grids = new List<AdvancedGrid> { verticalGrids.First(), verticalGrids.Last() };
-                foreach (var grid in grids)
+                if (verticalGrids.Any())
                 {
-                    foreach (var o in grid.Grid.get_Geometry(opt))
+                    // Сортирую по Y
+                    verticalGrids.Sort((g1, g2) => g1.StartPoint.Y.CompareTo(g2.StartPoint.Y));
+                    var grids = new List<AdvancedGrid> { verticalGrids.First(), verticalGrids.Last() };
+                    foreach (var grid in grids)
                     {
-                        var line = o as Line;
-                        if (line != null)
-                            referenceArray.Append(line.Reference);
+                        referenceArray.Append(grid.Reference);
                     }
                 }
             }
             else //// Иначе верх/низ
             {
                 var horizontalGrids = _advancedGrids.Where(g => g.Orientation == ElementOrientation.Vertical).ToList();
-                horizontalGrids.Sort((g1, g2) => g1.StartPoint.X.CompareTo(g2.StartPoint.X));
-                var grids = new List<AdvancedGrid> { horizontalGrids.First(), horizontalGrids.Last() };
-                foreach (var grid in grids)
+
+                if (horizontalGrids.Any())
                 {
-                    foreach (var o in grid.Grid.get_Geometry(opt))
+                    horizontalGrids.Sort((g1, g2) => g1.StartPoint.X.CompareTo(g2.StartPoint.X));
+                    var grids = new List<AdvancedGrid> { horizontalGrids.First(), horizontalGrids.Last() };
+                    foreach (var grid in grids)
                     {
-                        var line = o as Line;
-                        if (line != null)
-                            referenceArray.Append(line.Reference);
+                        referenceArray.Append(grid.Reference);
                     }
                 }
             }
 
-            if (!referenceArray.IsEmpty)
+            if (!referenceArray.IsEmpty && referenceArray.Size > 1)
             {
                 using (var transaction = new Transaction(doc, _transactionName))
                 {
@@ -281,24 +272,13 @@
         {
             var verticalGrids = _advancedGrids.Where(g => g.Orientation == ElementOrientation.Vertical).ToList();
             var horizontalGrids = _advancedGrids.Where(g => g.Orientation == ElementOrientation.Horizontal).ToList();
-            var opt = new Options
-            {
-                ComputeReferences = true,
-                IncludeNonVisibleObjects = true,
-                View = _uiApplication.ActiveUIDocument.Document.ActiveView
-            };
-
+            
             // Так как оси не нужно проверять на совпадение, то сразу добавляю их в массив
             if (extremeWallVariant == ExtremeWallVariant.Right || extremeWallVariant == ExtremeWallVariant.Left)
             {
                 foreach (var grid in horizontalGrids)
                 {
-                    foreach (var o in grid.Grid.get_Geometry(opt))
-                    {
-                        var line = o as Line;
-                        if (line != null)
-                            referenceArray.Append(line.Reference);
-                    }
+                    referenceArray.Append(grid.Reference);
                 }
             }
 
@@ -306,12 +286,7 @@
             {
                 foreach (var grid in verticalGrids)
                 {
-                    foreach (var o in grid.Grid.get_Geometry(opt))
-                    {
-                        var line = o as Line;
-                        if (line != null)
-                            referenceArray.Append(line.Reference);
-                    }
+                    referenceArray.Append(grid.Reference);
                 }
             }
         }

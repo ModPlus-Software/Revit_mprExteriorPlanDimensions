@@ -9,19 +9,24 @@
     public class AdvancedGrid
     {
         /// <summary>
+        /// Revit Grid
+        /// </summary>
+        private readonly Grid _grid;
+        
+        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="grid">Revit grid</param>
         public AdvancedGrid(Grid grid)
         {
-            Grid = grid;
+            _grid = grid;
             DefineAdvancedGridFields();
         }
 
         /// <summary>
-        /// Revit Grid
+        /// Reference
         /// </summary>
-        public Grid Grid { get; }
+        public Reference Reference => new Reference(_grid);
 
         /// <summary>False - не удалось определить значения для элемента</summary>
         public bool IsDefined { get; set; } = true;
@@ -45,7 +50,7 @@
         private void DefineAdvancedGridFields()
         {
             // get location curve
-            var curve = Grid.Curve;
+            var curve = _grid.Curve;
             if (curve == null)
             {
                 IsDefined = false;
